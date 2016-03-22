@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Optional;
 
 
 public class Main extends Application {
@@ -53,37 +54,31 @@ public class Main extends Application {
             folderPath = argsPrompt.getEditor().getText();
         }while(folderPath.equals(""));
 
-        BorderPane bp = new BorderPane();
-        HBox h = new HBox();
-
-        Button downloadButton = new Button("Download");
-        downloadButton.setOnAction(new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent event)
-            {
-
-            }
-        });
-        Button uploadButton = new Button("Upload");
-        uploadButton.setOnAction(new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent event)
-            {
-                File localDir = new File(folderPath);
-                File[] files = localDir.listFiles();
-                for(File f :files)
-                {
-                    System.out.println(f.getName());
-                }
-            }
-        });
         ListView<String> leftList = new ListView<>();
         String[] localFiles = getFiles();
         final ObservableList<String> localNames = FXCollections.observableArrayList(localFiles);
         leftList.setItems(localNames);
         ListView rightList = new ListView();
+
+        BorderPane bp = new BorderPane();
+        HBox h = new HBox();
+
+        Button downloadButton = new Button("Download");
+        downloadButton.setOnAction(event -> {
+
+        });
+        Button uploadButton = new Button("Upload");
+        uploadButton.setOnAction(event -> {
+            String fileName = leftList.getSelectionModel().getSelectedItem();
+            File uploadFile = new File(folderPath + "/" + fileName);
+            Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File " + uploadFile.getName() + " will be uploaded.\nContinue?");
+            Optional<ButtonType> result = uploadAlert.showAndWait();
+            if(result.isPresent() && result.get() == ButtonType.OK)
+            {
+                Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File " + uploadFile.getName() + " uploaded.");
+                uploadedAlert.show();
+            }
+        });
 
         SplitPane sp = new SplitPane();
 
