@@ -3,8 +3,6 @@ package sample;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,11 +12,22 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Optional;
 
 
 public class Main extends Application {
+
+    private Socket socket = null;
+    private BufferedReader in = null;
+    private PrintWriter networkOut = null;
+    private BufferedReader networkIn = null;
+
+    public  static String SERVER_ADDRESS = "localhost";
+    public  static int    SERVER_PORT = 16789;
 
     private static String computerName = "";
     private static String folderPath = "";
@@ -78,11 +87,11 @@ public class Main extends Application {
         uploadButton.setOnAction(event -> {
             String fileName = leftList.getSelectionModel().getSelectedItem();
             File uploadFile = new File(folderPath + "/" + fileName);
-            Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File " + uploadFile.getName() + " will be uploaded.\nContinue?");
+            Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
-                Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File " + uploadFile.getName() + " uploaded.");
+                Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + uploadFile.getName() + "\' uploaded.");
                 uploadedAlert.show();
             }
         });
