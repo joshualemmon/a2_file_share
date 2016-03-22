@@ -1,6 +1,8 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -11,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 
 public class Main extends Application {
@@ -48,7 +52,7 @@ public class Main extends Application {
             argsPrompt.showAndWait();
             folderPath = argsPrompt.getEditor().getText();
         }while(folderPath.equals(""));
-        System.out.println(computerName + "    " + folderPath);
+
         BorderPane bp = new BorderPane();
         HBox h = new HBox();
 
@@ -67,10 +71,18 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event)
             {
-
+                File localDir = new File(folderPath);
+                File[] files = localDir.listFiles();
+                for(File f :files)
+                {
+                    System.out.println(f.getName());
+                }
             }
         });
-        ListView leftList = new ListView();
+        ListView<String> leftList = new ListView<>();
+        String[] localFiles = getFiles();
+        final ObservableList<String> localNames = FXCollections.observableArrayList(localFiles);
+        leftList.setItems(localNames);
         ListView rightList = new ListView();
 
         SplitPane sp = new SplitPane();
@@ -90,6 +102,18 @@ public class Main extends Application {
         root.getChildren().addAll(bp);
     }
 
+    public static String[] getFiles()
+    {
+        File localDir = new File(folderPath);
+        File[] files =  localDir.listFiles();
+        String[] s = new String[files.length];
+        int i = 0;
+        for(File f : files)
+        {
+            s[i++] = f.getName();
+        }
+        return s;
+    }
 
 
     public static void main(String[] args) {
