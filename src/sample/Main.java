@@ -65,6 +65,13 @@ public class Main extends Application {
 
         Button downloadButton = new Button("Download");
         downloadButton.setOnAction(event -> {
+            Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File will be downloaded.\nContinue?");
+            Optional<ButtonType> result = downloadAlert.showAndWait();
+            if(result.isPresent() && result.get() == ButtonType.OK)
+            {
+                Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File downloaded.");
+                downloadedAlert.show();
+            }
 
         });
         Button uploadButton = new Button("Upload");
