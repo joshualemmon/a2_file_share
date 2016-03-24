@@ -21,13 +21,13 @@ import java.util.Optional;
 
 public class Main extends Application {
 
-    private Socket socket = null;
-    private BufferedReader in = null;
-    private PrintWriter networkOut = null;
-    private BufferedReader networkIn = null;
+    //private Socket socket               = null;
+    //private BufferedReader in           = null;
+    //private PrintWriter networkOut      = null;
+    //private BufferedReader networkIn    = null;
 
-    public  static String SERVER_ADDRESS = "localhost";
-    public  static int    SERVER_PORT = 16789;
+    public  static String SERVER_ADDRESS = "127.0.0.1";
+    public  static int    SERVER_PORT = 8080;
 
     private static String computerName = "";
     private static String folderPath = "";
@@ -39,6 +39,8 @@ public class Main extends Application {
         primaryStage.setTitle("Assignment 2 - File Sharer");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 
         drawUI(root);
     }
@@ -53,7 +55,7 @@ public class Main extends Application {
         {
             argsPrompt.showAndWait();
             computerName = argsPrompt.getEditor().getText();
-        }while(computerName.equals(""));
+        } while(computerName.equals(""));
 
         argsPrompt.setHeaderText("Folder Path");
         argsPrompt.setContentText("Please input your local folder path");
@@ -61,7 +63,7 @@ public class Main extends Application {
         {
             argsPrompt.showAndWait();
             folderPath = argsPrompt.getEditor().getText();
-        }while(folderPath.equals(""));
+        } while(folderPath.equals(""));
 
         ListView<String> leftList = new ListView<>();
         String[] localFiles = getFiles();
@@ -89,6 +91,8 @@ public class Main extends Application {
             File uploadFile = new File(folderPath + "/" + fileName);
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
+
+
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
                 Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + uploadFile.getName() + "\' uploaded.");
