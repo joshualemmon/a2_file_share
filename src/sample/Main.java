@@ -23,7 +23,7 @@ public class Main extends Application {
     private static BufferedInputStream bis  = null;
     private static BufferedOutputStream bos = null;
 
-    public  static String SERVER_ADDRESS    = "127.0.0.1";
+    public  static String SERVER_ADDRESS    = "127.0.0.8";
     public  static int    SERVER_PORT       = 8080;
 
     private static String computerName      = "";
@@ -56,6 +56,7 @@ public class Main extends Application {
         } while(computerName.equals(""));
 
         argsPrompt.setHeaderText("Folder Path");
+        argsPrompt.getEditor().setText("");
         argsPrompt.setContentText("Please input your local folder path");
         do
         {
@@ -68,7 +69,8 @@ public class Main extends Application {
         final ObservableList<String> localNames = FXCollections.observableArrayList(localFiles);
         leftList.setItems(localNames);
         ListView rightList = new ListView();
-
+        final ObservableList<String> serverNames = FXCollections.observableArrayList(FileServer.getServerFiles());
+        rightList.setItems(serverNames);
         BorderPane bp = new BorderPane();
         HBox h = new HBox();
 

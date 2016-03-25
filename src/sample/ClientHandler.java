@@ -9,14 +9,14 @@ public final class ClientHandler implements Runnable {
     protected PrintWriter writer    = null;
 
     protected Socket clientSocket   = null;
-    protected String localHost      = "127.0.0.1";
+    protected String localHost      = "127.0.0.8";
     protected int port              = 8080;
 
     protected File serverDir        = null;
 
 
     public ClientHandler(Socket socket) {
-        this.serverDir = new File("/home/wuwoot/Documents/b/serverFolder/plain.txt"); //Destination server folder
+        this.serverDir = new File("serverFolder/plain.txt"); //Destination server folder
         this.clientSocket = socket;
 
         try {

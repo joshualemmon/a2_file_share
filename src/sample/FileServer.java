@@ -12,7 +12,6 @@ public final class FileServer {
                                                     //Needs to handle multiple client threads, therefore there must be multiple
                                                     //file server threads
     protected int numClients                = 0;    //Total number of clientsf
-
     public static int SERVER_PORT = 8080;
 
     public FileServer()
@@ -39,6 +38,19 @@ public final class FileServer {
             System.err.println("IOEXception while creating server connection");
         }
 
+    }
+    public static String[] getServerFiles()
+    {
+        File servDir = new File("serverFolder");
+        File[] serverFiles = servDir.listFiles();
+
+        String[] s = new String[serverFiles.length];
+        int i = 0;
+        for(File f : serverFiles)
+        {
+            s[i++] = f.getName();
+        }
+        return s;
     }
 
     public static void main(String[] args)
