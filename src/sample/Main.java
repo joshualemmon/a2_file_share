@@ -28,7 +28,6 @@ public class Main extends Application {
 
     private static String computerName      = "";
     private static String folderPath        = "";
-    private static File uploadFile = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -77,11 +76,31 @@ public class Main extends Application {
         Button downloadButton = new Button("Download");
         downloadButton.setOnAction(event -> {
             String fileName = (String)rightList.getSelectionModel().getSelectedItem();
+            File downloadFile = new File("serverFolder/" + fileName);
             Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + fileName + "\' will be downloaded.\nContinue?");
             Optional<ButtonType> result = downloadAlert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
-                Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File downloaded.");
+                try
+                {
+                    long lengthOfFile = downloadFile.length();
+                    byte[] bytesInFile = new byte[(int)lengthOfFile];
+                    bis = new BufferedInputStream(new FileInputStream(downloadFile)); //Stream for file
+                    bis.read(bytesInFile, 0, bytesInFile.length); //Read in the file to stream
+                    bos = new BufferedOutputStream(clientSocket.getOutputStream()); //Stream to socket
+                    bos.write(bytesInFile, 0, bytesInFile.length); //Write file data to socket
+                    bos.flush(); //Finalize
+
+                    bis.close();
+                    bos.close();
+                    final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
+                    rightList.setItems(files);
+                }
+                catch(IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+                Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + fileName + "\' downloaded.");
                 downloadedAlert.show();
             }
 
@@ -89,7 +108,7 @@ public class Main extends Application {
         Button uploadButton = new Button("Upload");
         uploadButton.setOnAction(event -> {
             String fileName = leftList.getSelectionModel().getSelectedItem();
-            uploadFile = new File(folderPath + "/" + fileName);
+            File uploadFile = new File(folderPath + "/" + fileName);
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
 
