@@ -22,7 +22,7 @@ public class FileServer {
                 threads = new FileServerThread(clientSocket, filenames);
                 threads.start();
 
-                //serverSocket.close();
+                serverSocket.close();
             }
 
 

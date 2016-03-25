@@ -12,22 +12,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.Optional;
 
 
 public class Main extends Application {
-
-    //private Socket socket               = null;
-    //private BufferedReader in           = null;
-    //private PrintWriter networkOut      = null;
-    //private BufferedReader networkIn    = null;
-
-    public  static String SERVER_ADDRESS = "127.0.0.1";
-    public  static int    SERVER_PORT = 8080;
 
     private static String computerName = "";
     private static String folderPath = "";
@@ -39,8 +29,6 @@ public class Main extends Application {
         primaryStage.setTitle("Assignment 2 - File Sharer");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 
         drawUI(root);
     }
