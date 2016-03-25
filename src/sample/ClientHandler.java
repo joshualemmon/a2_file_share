@@ -3,7 +3,7 @@ package sample;
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public final class ClientHandler implements Runnable {
     protected BufferedInputStream bis   = null;
     protected BufferedOutputStream bos  = null;
     protected FileOutputStream fos      = null;
@@ -19,7 +19,7 @@ public class Client {
     protected File serverDir        = null;
 
 
-    public Client() {
+    public ClientHandler() {
         this.uploadFile = uploadFile;
         this.serverDir = new File("/home/wuwoot/Documents/b/serverFolder/" + uploadFile.getName());
 
@@ -31,7 +31,53 @@ public class Client {
         }
     }
 
-    protected boolean setUpload(File uploadFile) {
+
+
+    @Override
+    public void run()
+    {
+        try {
+            clientSocket = new Socket(localHost,port);
+
+            boolean endOfSession = false;
+            while (!endOfSession) {
+                endOfSession = processUpload();
+            }
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    protected boolean processUpload() {
+
+        try
+        {
+            byte[] fileLengthInBytes = new byte[(int) uploadFile.length()];
+
+            bis = new BufferedInputStream(clientSocket.getInputStream());
+            fos = new FileOutputStream(serverDir);
+            bos = new BufferedOutputStream(fos);
+
+
+            bis.read(fileLengthInBytes, 0, fileLengthInBytes.length);
+            bos.write(fileLengthInBytes, 0, fileLengthInBytes.length);
+            bos.flush();
+
+            bis.close();
+            bos.close();
+
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return true;
+    }
+
+    protected boolean processStart(File uploadFile) {
         return true;
     }
 

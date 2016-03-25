@@ -12,25 +12,25 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Optional;
 
 
 public class Main extends Application {
 
-    //private Socket socket               = null;
-    //private BufferedReader in           = null;
-    //private PrintWriter networkOut      = null;
-    //private BufferedReader networkIn    = null;
+    private static Socket clientSocket      = null;
+    private static BufferedInputStream bis  = null;
+    private static BufferedOutputStream bos = null;
+    private BufferedReader in             = null;
+    //private PrintWriter networkOut        = null;
+    //private BufferedReader networkIn      = null;
 
-    public  static String SERVER_ADDRESS = "127.0.0.1";
-    public  static int    SERVER_PORT = 8080;
+    public  static String SERVER_ADDRESS    = "127.0.0.1";
+    public  static int    SERVER_PORT       = 8080;
 
-    private static String computerName = "";
-    private static String folderPath = "";
+    private static String computerName      = "";
+    private static String folderPath        = "";
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -40,7 +40,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+        clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 
         drawUI(root);
     }
@@ -92,9 +92,27 @@ public class Main extends Application {
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
 
-
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
+                try {
+                    long lengthOfFile = uploadFile.length();
+                    byte[] bytesInFile = new byte[(int)(lengthOfFile)];
+
+                    bis = new BufferedInputStream(new FileInputStream(uploadFile));
+                    bis.read(bytesInFile, 0, bytesInFile.length);
+                    bos = new BufferedOutputStream(clientSocket.getOutputStream());
+                    bos.write(bytesInFile, 0, bytesInFile.length);
+                    bos.flush();
+
+                    bis.close();
+                    bos.close();
+                   //clientSocket.close();
+
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+
+
                 Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + uploadFile.getName() + "\' uploaded.");
                 uploadedAlert.show();
             }
