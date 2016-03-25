@@ -94,7 +94,7 @@ public class FileServerThread extends Thread {
         }
         */
 
-        return false;
+        return true;
     }
 /*
     protected boolean processCommand(String command, String filename) {

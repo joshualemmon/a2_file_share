@@ -10,10 +10,11 @@ public class FileServer {
     protected FileServerThread threads      = null;
     protected int numClients                = 0;
     protected File[] filenames              = null;
+    private static String serverFolder = ".serverfiles";
 
     public static int SERVER_PORT = 8080;
 
-    public FileServer() {
+    public FileServer(File[] filenames) {
         try {
             serverSocket = new ServerSocket(SERVER_PORT);
             while(true) {
@@ -31,8 +32,15 @@ public class FileServer {
         }
 
     }
+    public static File[] getServerFiles()
+    {
+        File localDir = new File(serverFolder);
+        File[] files =  localDir.listFiles();
+        return files;
+    }
 
     public static void main(String[] args) {
-        FileServer app = new FileServer();
+        File[] test = getServerFiles();
+        FileServer app = new FileServer(test);
     }
 }
