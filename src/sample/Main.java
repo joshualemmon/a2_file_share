@@ -76,7 +76,8 @@ public class Main extends Application {
 
         Button downloadButton = new Button("Download");
         downloadButton.setOnAction(event -> {
-            Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File will be downloaded.\nContinue?");
+            String fileName = (String)rightList.getSelectionModel().getSelectedItem();
+            Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + fileName + "\' will be downloaded.\nContinue?");
             Optional<ButtonType> result = downloadAlert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
@@ -107,7 +108,8 @@ public class Main extends Application {
 
                     bis.close();
                     bos.close();
-
+                    final ObservableList<String> serverFiles = FXCollections.observableArrayList(FileServer.getServerFiles());
+                    rightList.setItems(serverFiles);
                 } catch (IOException ioe)
                 {
                     ioe.printStackTrace();

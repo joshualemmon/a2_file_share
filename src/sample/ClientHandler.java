@@ -16,7 +16,7 @@ public final class ClientHandler implements Runnable {
 
 
     public ClientHandler(Socket socket) {
-        this.serverDir = new File("serverFolder/plain.txt"); //Destination server folder
+        this.serverDir = new File("serverFolder"); //Destination server folder
         this.clientSocket = socket;
 
         try {
