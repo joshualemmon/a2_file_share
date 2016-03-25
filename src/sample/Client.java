@@ -1,3 +1,4 @@
+/*
 package sample;
 
 import java.io.*;
@@ -19,7 +20,7 @@ public class Client {
     protected File serverDir        = null;
 
 
-    public Client() {
+    public Client(File uploadFile) {
         this.uploadFile = uploadFile;
         this.serverDir = new File("/home/wuwoot/Documents/b/serverFolder/" + uploadFile.getName());
 
@@ -54,8 +55,9 @@ public class Client {
         }
     }
 */
-
+/*
     public static void main(String[] args) {
 
     }
-}
+}*/
+

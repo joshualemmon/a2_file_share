@@ -4,34 +4,29 @@ import java.io.*;
 import java.net.*;
 
 public final class ClientHandler implements Runnable {
-    protected BufferedInputStream bis   = null;
-    protected BufferedOutputStream bos  = null;
-    protected FileOutputStream fos      = null;
-
-    //protected DataOutputStream dos  = null;
-    //protected BufferedReader in     = null;
+    protected FileOutputStream fos  = null;
+    protected BufferedReader in     = null;
+    protected PrintWriter writer    = null;
 
     protected Socket clientSocket   = null;
     protected String localHost      = "127.0.0.1";
     protected int port              = 8080;
 
-    protected File uploadFile       = null;
     protected File serverDir        = null;
 
 
-    public ClientHandler() {
-        this.uploadFile = uploadFile;
-        this.serverDir = new File("/home/wuwoot/Documents/b/serverFolder/" + uploadFile.getName());
+    public ClientHandler(Socket socket) {
+        this.serverDir = new File("/home/wuwoot/Documents/b/serverFolder/plain.txt"); //Destination server folder
+        this.clientSocket = socket;
 
         try {
-            clientSocket = new Socket(localHost, port);
-
-        } catch (IOException e) {
-            System.err.println("IOEXception while creating server connection");
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //Get the streamed data
+            fos = new FileOutputStream(serverDir);
+            writer = new PrintWriter(fos); //setup writing file to directory functionality
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
-
-
 
     @Override
     public void run()
@@ -54,15 +49,12 @@ public final class ClientHandler implements Runnable {
     }
 
     protected boolean processUpload() {
+        String line = null;
 
         try
         {
+            /*
             byte[] fileLengthInBytes = new byte[(int) uploadFile.length()];
-
-            bis = new BufferedInputStream(clientSocket.getInputStream());
-            fos = new FileOutputStream(serverDir);
-            bos = new BufferedOutputStream(fos);
-
 
             bis.read(fileLengthInBytes, 0, fileLengthInBytes.length);
             bos.write(fileLengthInBytes, 0, fileLengthInBytes.length);
@@ -70,14 +62,19 @@ public final class ClientHandler implements Runnable {
 
             bis.close();
             bos.close();
+            */
+
+            while ((line = in.readLine()) != null) {
+                //System.out.println();
+                writer.println(line);
+            }
+
+            in.close();
+            writer.close();
 
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }
-        return true;
-    }
-
-    protected boolean processStart(File uploadFile) {
         return true;
     }
 

@@ -1,3 +1,4 @@
+/*
 package sample;
 
 import java.io.*;
@@ -15,3 +16,4 @@ public class FileServerThread extends Thread {
         this.t = new Thread(new ClientHandler());    //Creates client thread
     }
 }
+*/
