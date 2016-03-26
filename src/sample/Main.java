@@ -13,14 +13,30 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.*;
+<<<<<<< HEAD
 import java.net.*;
+=======
+import java.net.Socket;
+>>>>>>> rework
 import java.util.Optional;
 
 
 public class Main extends Application {
 
+<<<<<<< HEAD
     private static String computerName = "";
     private static String folderPath = "";
+=======
+    private static Socket clientSocket      = null;
+    private static BufferedInputStream bis  = null;
+    private static BufferedOutputStream bos = null;
+
+    public  static String SERVER_ADDRESS    = "127.0.0.8";
+    public  static int    SERVER_PORT       = 8080;
+
+    private static String computerName      = "";
+    private static String folderPath        = "";
+>>>>>>> rework
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -30,6 +46,11 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+<<<<<<< HEAD
+=======
+        clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+
+>>>>>>> rework
         drawUI(root);
     }
 
@@ -46,6 +67,7 @@ public class Main extends Application {
         } while(computerName.equals(""));
 
         argsPrompt.setHeaderText("Folder Path");
+        argsPrompt.getEditor().setText("");
         argsPrompt.setContentText("Please input your local folder path");
         do
         {
@@ -58,17 +80,39 @@ public class Main extends Application {
         final ObservableList<String> localNames = FXCollections.observableArrayList(localFiles);
         leftList.setItems(localNames);
         ListView rightList = new ListView();
-
+        final ObservableList<String> serverNames = FXCollections.observableArrayList(FileServer.getServerFiles());
+        rightList.setItems(serverNames);
         BorderPane bp = new BorderPane();
         HBox h = new HBox();
 
         Button downloadButton = new Button("Download");
         downloadButton.setOnAction(event -> {
-            Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File will be downloaded.\nContinue?");
+            String fileName = (String)rightList.getSelectionModel().getSelectedItem();
+            File downloadFile = new File("serverFolder/" + fileName);
+            Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + fileName + "\' will be downloaded.\nContinue?");
             Optional<ButtonType> result = downloadAlert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
-                Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File downloaded.");
+                try
+                {
+                    long lengthOfFile = downloadFile.length();
+                    byte[] bytesInFile = new byte[(int)lengthOfFile];
+                    bis = new BufferedInputStream(new FileInputStream(downloadFile)); //Stream for file
+                    bis.read(bytesInFile, 0, bytesInFile.length); //Read in the file to stream
+                    bos = new BufferedOutputStream(clientSocket.getOutputStream()); //Stream to socket
+                    bos.write(bytesInFile, 0, bytesInFile.length); //Write file data to socket
+                    bos.flush(); //Finalize
+
+                    bis.close();
+                    bos.close();
+                    final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
+                    rightList.setItems(files);
+                }
+                catch(IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+                Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + fileName + "\' downloaded.");
                 downloadedAlert.show();
             }
 
@@ -80,9 +124,28 @@ public class Main extends Application {
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
 
-
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
+                try //This Code should be put into a client class
+                {
+                    long lengthOfFile = uploadFile.length();    //Counts the length of the file
+                    byte[] bytesInFile = new byte[(int)(lengthOfFile)]; //Stores the bytes in the file, I don't know how though
+
+                    bis = new BufferedInputStream(new FileInputStream(uploadFile)); //Stream for file
+                    bis.read(bytesInFile, 0, bytesInFile.length); //Read in the file to stream
+                    bos = new BufferedOutputStream(clientSocket.getOutputStream()); //Stream to socket
+                    bos.write(bytesInFile, 0, bytesInFile.length); //Write file data to socket
+                    bos.flush(); //Finalize
+
+                    bis.close();
+                    bos.close();
+                    final ObservableList<String> serverFiles = FXCollections.observableArrayList(FileServer.getServerFiles());
+                    rightList.setItems(serverFiles);
+                } catch (IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+
                 Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + uploadFile.getName() + "\' uploaded.");
                 uploadedAlert.show();
             }
@@ -117,7 +180,6 @@ public class Main extends Application {
         }
         return s;
     }
-
 
     public static void main(String[] args) {
         launch(args);
