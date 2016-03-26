@@ -13,20 +13,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.*;
-<<<<<<< HEAD
+
 import java.net.*;
-=======
 import java.net.Socket;
->>>>>>> rework
 import java.util.Optional;
 
 
 public class Main extends Application {
 
-<<<<<<< HEAD
-    private static String computerName = "";
-    private static String folderPath = "";
-=======
     private static Socket clientSocket      = null;
     private static BufferedInputStream bis  = null;
     private static BufferedOutputStream bos = null;
@@ -36,7 +30,6 @@ public class Main extends Application {
 
     private static String computerName      = "";
     private static String folderPath        = "";
->>>>>>> rework
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -46,11 +39,8 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-<<<<<<< HEAD
-=======
         clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 
->>>>>>> rework
         drawUI(root);
     }
 
