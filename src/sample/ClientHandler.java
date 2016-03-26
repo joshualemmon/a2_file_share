@@ -1,5 +1,8 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.io.*;
 import java.net.*;
 
@@ -20,6 +23,7 @@ public final class ClientHandler implements Runnable {
         {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             message = in.readLine();
+
             title = in.readLine();
             path = in.readLine();
 
@@ -29,22 +33,21 @@ public final class ClientHandler implements Runnable {
                 serverDir.createNewFile();                                                      //Create a new file
                 fos = new FileOutputStream(serverDir);
                 writer = new PrintWriter(fos);                                                  //Write to file
-            }
-            else if (message.equals("DOWNLOAD"))
+            } else if (message.equals("DOWNLOAD"))
             {
                 File localDir = new File(path + "/" + title);
                 localDir.createNewFile();
                 fos = new FileOutputStream(localDir);
                 writer = new PrintWriter(fos);
-            }
-            else if(message.equals("DELETE"))
+            } else if (message.equals("DELETE"))
             {
                 File deleteFile = new File(path + "/" + title);
                 deleteFile.delete();
             }
+
         } catch (IOException ioe)
         {
-             System.err.println("Problem with reading file.");
+            System.err.println("Problem with reading file.");
 
         } catch (NullPointerException npe)
         {

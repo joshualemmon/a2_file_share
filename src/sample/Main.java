@@ -263,12 +263,12 @@ public class Main extends Application {
 
     public static void updateFileLists(ListView<String> leftList, ListView<String> rightList )
     {
+
         final ObservableList<String> left = FXCollections.observableArrayList(getFiles());
         final ObservableList<String> right = FXCollections.observableArrayList(FileServer.getServerFiles());
         leftList.setItems(left);
         rightList.setItems(right);
     }
-
     public static void main(String[] args) {
         launch(args);
     }
