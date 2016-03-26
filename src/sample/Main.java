@@ -31,8 +31,9 @@ public class Main extends Application {
     public  static int    SERVER_PORT       = 8080;
 
     private static String computerName      = "";
-    public static String folderPath        = "";
+    public static String folderPath         = "";
 
+    private static File downloadFile        = null;
     private static File uploadFile          = null;         //File to upload
     private static File copyFile            = null;         //File is filename + copy of uploadFile that will send through stream
 
@@ -43,8 +44,6 @@ public class Main extends Application {
         primaryStage.setTitle("Assignment 2 - File Sharer");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 
         drawUI(root);
     }
@@ -71,28 +70,27 @@ public class Main extends Application {
         } while(folderPath.equals(""));
 
         ListView<String> leftList = new ListView<>();
-        String[] localFiles = getFiles();
-        final ObservableList<String> localNames = FXCollections.observableArrayList(localFiles);
-        leftList.setItems(localNames);
-        ListView rightList = new ListView();
-        final ObservableList<String> serverNames = FXCollections.observableArrayList(FileServer.getServerFiles());
-        rightList.setItems(serverNames);
+        ListView<String> rightList = new ListView();
+        updateFileLists(leftList, rightList);
+
         BorderPane bp = new BorderPane();
         HBox h = new HBox();
 
         Button downloadButton = new Button("Download");
         downloadButton.setOnAction(event -> {
-            String fileName = (String)rightList.getSelectionModel().getSelectedItem();
-            File downloadFile = new File("serverFolder/" + fileName);
+            String fileName = rightList.getSelectionModel().getSelectedItem();
+            downloadFile = new File("serverFolder/" + fileName);
             copyFile = new File("serverFolder/COPY-" + fileName);
             Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + fileName + "\' will be downloaded.\nContinue?");
             Optional<ButtonType> result = downloadAlert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
                 String line = null;
+                FileServer.setDownload();
+
                 try
                 {
-                    FileServer.message = "DOWNLOAD";
+                    clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
                     copyFile.createNewFile();
                     in = new BufferedReader(new FileReader(downloadFile));    //BufferedReader for original file
                     writer = new PrintWriter(copyFile);                     //Writer to temporary file
@@ -103,9 +101,9 @@ public class Main extends Application {
                         writer.println(line);
                     }
 
-                    long lengthOfFile = downloadFile.length();
+                    long lengthOfFile = copyFile.length();
                     byte[] bytesInFile = new byte[(int)lengthOfFile];
-                    bis = new BufferedInputStream(new FileInputStream(downloadFile)); //Stream for file
+                    bis = new BufferedInputStream(new FileInputStream(copyFile)); //Stream for file
                     bis.read(bytesInFile, 0, bytesInFile.length); //Read in the file to stream
                     bos = new BufferedOutputStream(clientSocket.getOutputStream()); //Stream to socket
                     bos.write(bytesInFile, 0, bytesInFile.length); //Write file data to socket
@@ -114,14 +112,15 @@ public class Main extends Application {
                     copyFile.delete();
                     bis.close();
                     bos.close();
-                    FileServer.message = "";
-                    final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
-                    leftList.setItems(files);
+                    clientSocket.close();
+
+                    updateFileLists(leftList, rightList);
                 }
                 catch(IOException ioe)
                 {
                     ioe.printStackTrace();
                 }
+                FileServer.setEmpty();
                 Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + fileName + "\' downloaded.");
                 downloadedAlert.show();
             }
@@ -138,9 +137,10 @@ public class Main extends Application {
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
                 String line = null;
-                FileServer.message = "UPLOAD";
+                FileServer.setUpload();
                 try
                 {
+                    clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
                     copyFile.createNewFile();                               //Create a temporary file
 
                     in = new BufferedReader(new FileReader(uploadFile));    //BufferedReader for original file
@@ -167,14 +167,13 @@ public class Main extends Application {
                     copyFile.delete();
                     bis.close();
                     bos.close();
-                    FileServer.message = "";
-                    final ObservableList<String> serverFiles = FXCollections.observableArrayList(FileServer.getServerFiles());
-                    rightList.setItems(serverFiles);
+                    clientSocket.close();
+                    updateFileLists(leftList, rightList);
                 } catch (IOException ioe)
                 {
                     ioe.printStackTrace();
                 }
-
+                FileServer.setEmpty();
                 Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + uploadFile.getName() + "\' uploaded.");
                 uploadedAlert.show();
             }
@@ -208,6 +207,22 @@ public class Main extends Application {
             s[i++] = f.getName();
         }
         return s;
+    }
+
+    public static void updateFileLists(ListView<String> leftList, ListView<String> rightList )
+    {
+        try
+        {
+            clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+            final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
+            leftList.setItems(files);
+            final ObservableList<String> serverNames = FXCollections.observableArrayList(FileServer.getServerFiles());
+            rightList.setItems(serverNames);
+            clientSocket.close();
+        }catch(IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

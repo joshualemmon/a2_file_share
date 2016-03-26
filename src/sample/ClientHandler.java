@@ -19,7 +19,7 @@ public final class ClientHandler implements Runnable {
         this.serverDir = new File("serverFolder"); //Destination server folder
         this.clientSocket = socket;
         String title = null;    //Place holder for the title of the file
-
+        System.out.println(message);
         if(message.equals("UPLOAD"))
         {
             try
@@ -27,8 +27,7 @@ public final class ClientHandler implements Runnable {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));  //Get the streamed file data
 
                 title = in.readLine();                                                          //Get the title of the file
-                serverDir = new File("serverFolder/" + title);         //Create path to new file -- Tony
-                //serverDir = new File("/home/wuwoot/Documents/b/serverFolder/" + title);         //Create path to new file -- Josh
+                serverDir = new File("serverFolder/" + title);         //Create path to new file
                 serverDir.createNewFile();                                                      //Create a new file
 
                 fos = new FileOutputStream(serverDir);
@@ -44,6 +43,7 @@ public final class ClientHandler implements Runnable {
          {
              in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              title = in.readLine();
+
              File localDir = new File(Main.folderPath + "/" + title);
              localDir.createNewFile();
 

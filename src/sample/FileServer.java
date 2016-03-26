@@ -14,7 +14,7 @@ public class FileServer
                                                     //file server threads
     protected int numClients                = 0;    //Total number of clientsf
     public static int SERVER_PORT = 8080;
-    public static String message = "";
+    private static String message = "";
 
     public FileServer()
     {
@@ -28,6 +28,7 @@ public class FileServer
                 {
                     clientSocket = serverSocket.accept();
                     System.out.println("Client #" + (numClients + 1) + " connected.");
+                    System.out.println("Server command: " + message);
                     Thread handlerThread = new Thread(new ClientHandler(clientSocket, message));
                     handlerThread.start();
                 } catch (IOException ioe)
@@ -56,6 +57,18 @@ public class FileServer
         return s;
     }
 
+    public static void setDownload()
+    {
+        message = "DOWNLOAD";
+    }
+    public static void setUpload()
+    {
+        message = "UPLOAD";
+    }
+    public static void setEmpty()
+    {
+        message = "";
+    }
     public static void main(String[] args)
     {
         FileServer server = new FileServer();
