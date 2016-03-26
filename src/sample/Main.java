@@ -24,12 +24,19 @@ public class Main extends Application {
     private static Socket clientSocket      = null;
     private static BufferedInputStream bis  = null;
     private static BufferedOutputStream bos = null;
+    private static BufferedReader in        = null;
+    private static PrintWriter writer       = null;
 
     public  static String SERVER_ADDRESS    = "127.0.0.8";
     public  static int    SERVER_PORT       = 8080;
 
     private static String computerName      = "";
     private static String folderPath        = "";
+<<<<<<< HEAD
+=======
+    private static File uploadFile          = null;         //File to upload
+    private static File copyFile            = null;         //File is filename + copy of uploadFile that will send through stream
+>>>>>>> ee5718d857caaaa7b6a4c7c510eddd92685e4e66
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -110,23 +117,45 @@ public class Main extends Application {
         Button uploadButton = new Button("Upload");
         uploadButton.setOnAction(event -> {
             String fileName = leftList.getSelectionModel().getSelectedItem();
+<<<<<<< HEAD
             File uploadFile = new File(folderPath + "/" + fileName);
+=======
+            uploadFile = new File(folderPath + "/" + fileName);
+            copyFile = new File(folderPath + "/COPY - " + fileName);
+>>>>>>> ee5718d857caaaa7b6a4c7c510eddd92685e4e66
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
 
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
-                try //This Code should be put into a client class
+                String line = null;
+
+                try
                 {
-                    long lengthOfFile = uploadFile.length();    //Counts the length of the file
-                    byte[] bytesInFile = new byte[(int)(lengthOfFile)]; //Stores the bytes in the file, I don't know how though
+                    copyFile.createNewFile();                               //Create a temporary file
 
-                    bis = new BufferedInputStream(new FileInputStream(uploadFile)); //Stream for file
-                    bis.read(bytesInFile, 0, bytesInFile.length); //Read in the file to stream
+                    in = new BufferedReader(new FileReader(uploadFile));    //BufferedReader for original file
+                    writer = new PrintWriter(copyFile);                     //Writer to temporary file
+
+                    writer.println(uploadFile.getName());                   //Write file name to temporary file
+
+                    while((line = in.readLine()) != null) {                 //Write file data to temporary file
+                        writer.println(line);
+                    }
+
+                    in.close();
+                    writer.close();
+
+                    long lengthOfFile = copyFile.length();                          //Counts the length/size of the file
+                    byte[] bytesInFile = new byte[(int)(lengthOfFile)];             //Stores the bytes in the file, I don't know how though
+
+                    bis = new BufferedInputStream(new FileInputStream(copyFile));   //Stream for temporary file
+                    bis.read(bytesInFile, 0, bytesInFile.length);                   //Read in the file to stream
                     bos = new BufferedOutputStream(clientSocket.getOutputStream()); //Stream to socket
-                    bos.write(bytesInFile, 0, bytesInFile.length); //Write file data to socket
-                    bos.flush(); //Finalize
+                    bos.write(bytesInFile, 0, bytesInFile.length);                  //Write file data to socket
+                    bos.flush();                                                    //Release stream and close
 
+                    copyFile.delete();
                     bis.close();
                     bos.close();
                     final ObservableList<String> serverFiles = FXCollections.observableArrayList(FileServer.getServerFiles());

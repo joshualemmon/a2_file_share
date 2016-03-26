@@ -16,13 +16,24 @@ public final class ClientHandler implements Runnable {
 
 
     public ClientHandler(Socket socket) {
+<<<<<<< HEAD
         this.serverDir = new File("serverFolder"); //Destination server folder
+=======
+>>>>>>> ee5718d857caaaa7b6a4c7c510eddd92685e4e66
         this.clientSocket = socket;
+        String title = null;    //Place holder for the title of the file
 
-        try {
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //Get the streamed data
+        try
+        {
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));  //Get the streamed file data
+
+            title = in.readLine();                                                          //Get the title of the file
+            serverDir = new File("/home/wuwoot/Documents/b/serverFolder/" + title);         //Create path to new file -- Tony
+            //serverDir = new File("/home/wuwoot/Documents/b/serverFolder/" + title);         //Create path to new file -- Josh
+            serverDir.createNewFile();                                                      //Create a new file
+
             fos = new FileOutputStream(serverDir);
-            writer = new PrintWriter(fos); //setup writing file to directory functionality
+            writer = new PrintWriter(fos);                                                  //Write to file
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -53,19 +64,7 @@ public final class ClientHandler implements Runnable {
 
         try
         {
-            /*
-            byte[] fileLengthInBytes = new byte[(int) uploadFile.length()];
-
-            bis.read(fileLengthInBytes, 0, fileLengthInBytes.length);
-            bos.write(fileLengthInBytes, 0, fileLengthInBytes.length);
-            bos.flush();
-
-            bis.close();
-            bos.close();
-            */
-
             while ((line = in.readLine()) != null) {
-                //System.out.println();
                 writer.println(line);
             }
 
