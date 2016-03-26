@@ -12,6 +12,7 @@ public final class ClientHandler implements Runnable {
     protected PrintWriter writer    = null;
 
     protected Socket clientSocket   = null;
+    protected boolean skip          = false;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
@@ -32,22 +33,26 @@ public final class ClientHandler implements Runnable {
                 File serverDir = new File(path + "/" + title);                                  //Create path to new file
                 serverDir.createNewFile();                                                      //Create a new file
                 fos = new FileOutputStream(serverDir);
-                writer = new PrintWriter(fos);                                                  //Write to file
+                writer = new PrintWriter(fos); //Write to file
+                skip = false;
             } else if (message.equals("DOWNLOAD"))
             {
                 File localDir = new File(path + "/" + title);
                 localDir.createNewFile();
                 fos = new FileOutputStream(localDir);
                 writer = new PrintWriter(fos);
+                skip = false;
             } else if (message.equals("DELETE"))
             {
                 File deleteFile = new File(path + "/" + title);
+                System.out.println(deleteFile.getAbsolutePath());
                 deleteFile.delete();
+                skip = true;
             }
 
         } catch (IOException ioe)
         {
-            System.err.println("Problem with reading file.");
+            System.err.println("Problem with reading in constructor file.");
 
         } catch (NullPointerException npe)
         {
@@ -61,7 +66,8 @@ public final class ClientHandler implements Runnable {
     {
         boolean endOfSession = false;
 
-        while (!endOfSession) {
+        while (!endOfSession && !skip) {
+            System.out.println("h");
             endOfSession = processUpload();
         }
 
@@ -70,6 +76,8 @@ public final class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        skip = false;
     }
 
     protected boolean processUpload()
@@ -80,6 +88,7 @@ public final class ClientHandler implements Runnable {
         {
             while ((line = in.readLine()) != null)
             {
+                System.out.println(line);
                 writer.println(line);
             }
 
@@ -87,7 +96,8 @@ public final class ClientHandler implements Runnable {
             writer.close();
         } catch(IOException ioe)
         {
-            System.err.println("Problem with reading file.");
+            ioe.printStackTrace();
+            //System.err.println("Problem with reading processUpload file.");
         }
         return true;
     }

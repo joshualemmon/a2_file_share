@@ -1,0 +1,3 @@
+DELETE
+third copy of 4th copy of hihi.txt
+.serverFolder

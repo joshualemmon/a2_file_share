@@ -30,8 +30,8 @@ public class Main extends Application {
     public  static int    SERVER_PORT       = 8080;
 
     private static String computerName      = "";
-    private static String folderPath         = "";
-    private static String destPath = ".serverFolder";
+    private static String folderPath        = "";
+    private static String destPath          = ".serverFolder";
 
     private static File downloadFile        = null;
     private static File uploadFile          = null;         //File to upload
@@ -219,7 +219,6 @@ public class Main extends Application {
 
                     bis.close();
                     bos.close();
-                    deleteFile.delete();
 
                     updateFileLists(leftList, rightList);
                 } catch (IOException ioe)
