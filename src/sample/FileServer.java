@@ -36,6 +36,7 @@ public class FileServer
 
         } catch (IOException e) {
             System.err.println("IOEXception while creating server connection");
+            System.exit(0);
         }
 
     }
