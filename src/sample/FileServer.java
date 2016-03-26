@@ -29,7 +29,7 @@ public class FileServer
                     clientSocket = serverSocket.accept();
                     System.out.println("Client #" + (numClients + 1) + " connected.");
                     System.out.println("Server command: " + message);
-                    Thread handlerThread = new Thread(new ClientHandler(clientSocket, message));
+                    Thread handlerThread = new Thread(new ClientHandler(clientSocket));
                     handlerThread.start();
                 } catch (IOException ioe)
                 {

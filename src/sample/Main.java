@@ -45,6 +45,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
         drawUI(root);
     }
 
@@ -90,11 +91,11 @@ public class Main extends Application {
 
                 try
                 {
-                    clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
                     copyFile.createNewFile();
                     in = new BufferedReader(new FileReader(downloadFile));    //BufferedReader for original file
                     writer = new PrintWriter(copyFile);                     //Writer to temporary file
 
+                    writer.println("DOWNLOAD");
                     writer.println(downloadFile.getName());                   //Write file name to temporary file
 
                     while((line = in.readLine()) != null) {                 //Write file data to temporary file
@@ -140,12 +141,11 @@ public class Main extends Application {
                 FileServer.setUpload();
                 try
                 {
-                    clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
                     copyFile.createNewFile();                               //Create a temporary file
 
                     in = new BufferedReader(new FileReader(uploadFile));    //BufferedReader for original file
                     writer = new PrintWriter(copyFile);                     //Writer to temporary file
-
+                    writer.println("UPLOAD");
                     writer.println(uploadFile.getName());                   //Write file name to temporary file
 
                     while((line = in.readLine()) != null) {                 //Write file data to temporary file
@@ -211,18 +211,10 @@ public class Main extends Application {
 
     public static void updateFileLists(ListView<String> leftList, ListView<String> rightList )
     {
-        try
-        {
-            clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
             leftList.setItems(files);
             final ObservableList<String> serverNames = FXCollections.observableArrayList(FileServer.getServerFiles());
             rightList.setItems(serverNames);
-            clientSocket.close();
-        }catch(IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {

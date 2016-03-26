@@ -15,46 +15,38 @@ public final class ClientHandler implements Runnable {
     protected File serverDir        = null;
 
 
-    public ClientHandler(Socket socket, String message) {
+    public ClientHandler(Socket socket) {
         this.serverDir = new File("serverFolder"); //Destination server folder
         this.clientSocket = socket;
-        String title = null;    //Place holder for the title of the file
-        System.out.println(message);
-        if(message.equals("UPLOAD"))
+        String title;
+        String message;
+        try
         {
-            try
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            message = in.readLine();
+            title = in.readLine();
+            if(message.equals("UPLOAD"))
             {
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));  //Get the streamed file data
-
-                title = in.readLine();                                                          //Get the title of the file
                 serverDir = new File("serverFolder/" + title);         //Create path to new file
                 serverDir.createNewFile();                                                      //Create a new file
-
                 fos = new FileOutputStream(serverDir);
                 writer = new PrintWriter(fos);                                                  //Write to file
-            } catch (IOException ioe)
-            {
-                ioe.printStackTrace();
             }
-        }
-        else if(message.equals("DOWNLOAD"))
-        {
-         try
-         {
-             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             title = in.readLine();
+            else if(message.equals("DOWNLOAD"))
+            {
 
-             File localDir = new File(Main.folderPath + "/" + title);
-             localDir.createNewFile();
+                File localDir = new File(Main.folderPath + "/" + title);
+                localDir.createNewFile();
 
-             fos = new FileOutputStream(localDir);
-             writer = new PrintWriter(fos);
+                fos = new FileOutputStream(localDir);
+                writer = new PrintWriter(fos);
+            }
          }catch(IOException ioe)
          {
              ioe.printStackTrace();
          }
-        }
     }
+
 
     @Override
     public void run()
