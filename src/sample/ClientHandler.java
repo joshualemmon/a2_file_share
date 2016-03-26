@@ -37,6 +37,11 @@ public final class ClientHandler implements Runnable {
                 fos = new FileOutputStream(localDir);
                 writer = new PrintWriter(fos);
             }
+            else if(message.equals("DELETE"))
+            {
+                File deleteFile = new File(path + "/" + title);
+                deleteFile.delete();
+            }
         } catch (IOException ioe)
         {
              System.err.println("Problem with reading file.");

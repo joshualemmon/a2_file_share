@@ -39,6 +39,7 @@ public class Main extends Application {
 
     public static ListView<String> leftList;
     public static ListView<String> rightList;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         Group root = new Group();
@@ -100,10 +101,7 @@ public class Main extends Application {
                     writer.println(downloadFile.getName());                   //Write file name to temporary file
                     writer.println(folderPath);
 
-                    System.out.println(downloadFile.getName());
-
                     while((line = in.readLine()) != null) {                 //Write file data to temporary file
-                        System.out.println(line);
                         writer.println(line);
                     }
 
@@ -130,6 +128,7 @@ public class Main extends Application {
                 {
                     ioe.printStackTrace();
                 }
+                updateFileLists(leftList, rightList);
                 Alert downloadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + fileName + "\' downloaded.");
                 downloadedAlert.show();
             }
@@ -185,7 +184,7 @@ public class Main extends Application {
                 {
                     ioe.printStackTrace();
                 }
-
+                updateFileLists(leftList, rightList);
                 Alert uploadedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + uploadFile.getName() + "\' uploaded.");
                 uploadedAlert.show();
             }
@@ -193,10 +192,44 @@ public class Main extends Application {
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(event -> {
             String fileName = rightList.getSelectionModel().getSelectedItem();
-            File deleteFile = new File(destPath + "/" + fileName);
-            deleteFile.delete();
-            updateFileLists(leftList, rightList);
+            File deleteFile = new File(fileName);
+            Alert deleteAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + deleteFile.getName() + "\' will be deleted from server.\nContinue?");
+            Optional<ButtonType> result = deleteAlert.showAndWait();
+            if(result.isPresent() &&  result.get() == ButtonType.OK)
+            {
+                try
+                {
+                    clientSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+                    writer = new PrintWriter(deleteFile);                     //Writer to temporary file
 
+                    writer.println("DELETE");                               //Write UPLOAD message to server
+                    writer.println(fileName);                               //Write file name to temporary file
+                    writer.println(destPath);
+                    writer.close();
+
+                    long lengthOfFile = deleteFile.length();                          //Counts the length/size of the file
+                    byte[] bytesInFile = new byte[(int) (lengthOfFile)];             //Stores the bytes in the file, I don't know how though
+
+                    bis = new BufferedInputStream(new FileInputStream(deleteFile));   //Stream for temporary file
+                    bis.read(bytesInFile, 0, bytesInFile.length);                   //Read in the file to stream
+
+                    bos = new BufferedOutputStream(clientSocket.getOutputStream()); //Stream to socket
+                    bos.write(bytesInFile, 0, bytesInFile.length);                  //Write file data to socket
+                    bos.flush();                                                    //Release stream and close
+
+                    bis.close();
+                    bos.close();
+                    deleteFile.delete();
+
+                    updateFileLists(leftList, rightList);
+                } catch (IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+            }
+            Alert deletedAlert = new Alert(Alert.AlertType.INFORMATION, "File \'" + fileName + "\' deleted.");
+            deletedAlert.show();
+            updateFileLists(leftList, rightList);
         });
         SplitPane sp = new SplitPane();
 
