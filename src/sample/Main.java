@@ -32,11 +32,9 @@ public class Main extends Application {
 
     private static String computerName      = "";
     private static String folderPath        = "";
-<<<<<<< HEAD
-=======
+
     private static File uploadFile          = null;         //File to upload
     private static File copyFile            = null;         //File is filename + copy of uploadFile that will send through stream
->>>>>>> ee5718d857caaaa7b6a4c7c510eddd92685e4e66
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -117,12 +115,8 @@ public class Main extends Application {
         Button uploadButton = new Button("Upload");
         uploadButton.setOnAction(event -> {
             String fileName = leftList.getSelectionModel().getSelectedItem();
-<<<<<<< HEAD
-            File uploadFile = new File(folderPath + "/" + fileName);
-=======
             uploadFile = new File(folderPath + "/" + fileName);
             copyFile = new File(folderPath + "/COPY - " + fileName);
->>>>>>> ee5718d857caaaa7b6a4c7c510eddd92685e4e66
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
 

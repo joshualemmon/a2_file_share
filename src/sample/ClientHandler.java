@@ -16,10 +16,7 @@ public final class ClientHandler implements Runnable {
 
 
     public ClientHandler(Socket socket) {
-<<<<<<< HEAD
         this.serverDir = new File("serverFolder"); //Destination server folder
-=======
->>>>>>> ee5718d857caaaa7b6a4c7c510eddd92685e4e66
         this.clientSocket = socket;
         String title = null;    //Place holder for the title of the file
 
