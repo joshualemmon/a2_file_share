@@ -14,6 +14,7 @@ public class FileServer
                                                     //file server threads
     protected int numClients                = 0;    //Total number of clientsf
     public static int SERVER_PORT = 8080;
+    public static String message = "";
 
     public FileServer()
     {
@@ -27,7 +28,7 @@ public class FileServer
                 {
                     clientSocket = serverSocket.accept();
                     System.out.println("Client #" + (numClients + 1) + " connected.");
-                    Thread handlerThread = new Thread(new ClientHandler(clientSocket));
+                    Thread handlerThread = new Thread(new ClientHandler(clientSocket, message));
                     handlerThread.start();
                 } catch (IOException ioe)
                 {

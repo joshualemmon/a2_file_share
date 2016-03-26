@@ -31,7 +31,7 @@ public class Main extends Application {
     public  static int    SERVER_PORT       = 8080;
 
     private static String computerName      = "";
-    private static String folderPath        = "";
+    public static String folderPath        = "";
 
     private static File uploadFile          = null;         //File to upload
     private static File copyFile            = null;         //File is filename + copy of uploadFile that will send through stream
@@ -84,12 +84,25 @@ public class Main extends Application {
         downloadButton.setOnAction(event -> {
             String fileName = (String)rightList.getSelectionModel().getSelectedItem();
             File downloadFile = new File("serverFolder/" + fileName);
+            copyFile = new File("serverFolder/COPY-" + fileName);
             Alert downloadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + fileName + "\' will be downloaded.\nContinue?");
             Optional<ButtonType> result = downloadAlert.showAndWait();
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
+                String line = null;
                 try
                 {
+                    FileServer.message = "DOWNLOAD";
+                    copyFile.createNewFile();
+                    in = new BufferedReader(new FileReader(downloadFile));    //BufferedReader for original file
+                    writer = new PrintWriter(copyFile);                     //Writer to temporary file
+
+                    writer.println(downloadFile.getName());                   //Write file name to temporary file
+
+                    while((line = in.readLine()) != null) {                 //Write file data to temporary file
+                        writer.println(line);
+                    }
+
                     long lengthOfFile = downloadFile.length();
                     byte[] bytesInFile = new byte[(int)lengthOfFile];
                     bis = new BufferedInputStream(new FileInputStream(downloadFile)); //Stream for file
@@ -98,10 +111,12 @@ public class Main extends Application {
                     bos.write(bytesInFile, 0, bytesInFile.length); //Write file data to socket
                     bos.flush(); //Finalize
 
+                    copyFile.delete();
                     bis.close();
                     bos.close();
+                    FileServer.message = "";
                     final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
-                    rightList.setItems(files);
+                    leftList.setItems(files);
                 }
                 catch(IOException ioe)
                 {
@@ -116,14 +131,14 @@ public class Main extends Application {
         uploadButton.setOnAction(event -> {
             String fileName = leftList.getSelectionModel().getSelectedItem();
             uploadFile = new File(folderPath + "/" + fileName);
-            copyFile = new File(folderPath + "/COPY - " + fileName);
+            copyFile = new File(folderPath + "/COPY-" + fileName);
             Alert uploadAlert = new Alert(Alert.AlertType.CONFIRMATION, "File \'" + uploadFile.getName() + "\' will be uploaded.\nContinue?");
             Optional<ButtonType> result = uploadAlert.showAndWait();
 
             if(result.isPresent() && result.get() == ButtonType.OK)
             {
                 String line = null;
-
+                FileServer.message = "UPLOAD";
                 try
                 {
                     copyFile.createNewFile();                               //Create a temporary file
@@ -152,6 +167,7 @@ public class Main extends Application {
                     copyFile.delete();
                     bis.close();
                     bos.close();
+                    FileServer.message = "";
                     final ObservableList<String> serverFiles = FXCollections.observableArrayList(FileServer.getServerFiles());
                     rightList.setItems(serverFiles);
                 } catch (IOException ioe)
