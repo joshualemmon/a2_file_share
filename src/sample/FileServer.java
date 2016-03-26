@@ -1,10 +1,7 @@
 package sample;
 
-import com.sun.jndi.ldap.Connection;
-
 import java.io.*;
 import java.net.*;
-import java.util.Vector;
 
 public class FileServer
 {
@@ -12,9 +9,8 @@ public class FileServer
     protected ServerSocket serverSocket     = null; //The Server current socket that will be actively listening to requests
                                                     //Needs to handle multiple client threads, therefore there must be multiple
                                                     //file server threads
-    protected int numClients                = 0;    //Total number of clientsf
-    public static int SERVER_PORT = 8080;
-    private static String message = "";
+    protected int numClients                = 0;    //Total number of clients
+    public static int SERVER_PORT           = 8080;
 
     public FileServer()
     {
@@ -28,9 +24,10 @@ public class FileServer
                 {
                     clientSocket = serverSocket.accept();
                     System.out.println("Client #" + (numClients + 1) + " connected.");
-                    System.out.println("Server command: " + message);
+                    System.out.println(clientSocket.isClosed());
                     Thread handlerThread = new Thread(new ClientHandler(clientSocket));
                     handlerThread.start();
+
                 } catch (IOException ioe)
                 {
                     ioe.printStackTrace();
@@ -39,13 +36,14 @@ public class FileServer
 
         } catch (IOException e) {
             System.err.println("IOEXception while creating server connection");
+            System.exit(0);
         }
 
     }
 
     public static String[] getServerFiles()
     {
-        File servDir = new File("serverFolder");
+        File servDir = new File(".serverFolder");
         File[] serverFiles = servDir.listFiles();
 
         String[] s = new String[serverFiles.length];
@@ -57,18 +55,6 @@ public class FileServer
         return s;
     }
 
-    public static void setDownload()
-    {
-        message = "DOWNLOAD";
-    }
-    public static void setUpload()
-    {
-        message = "UPLOAD";
-    }
-    public static void setEmpty()
-    {
-        message = "";
-    }
     public static void main(String[] args)
     {
         FileServer server = new FileServer();
