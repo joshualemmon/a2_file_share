@@ -29,10 +29,13 @@ public class FileServer
                     System.out.println("Client #" + (numClients + 1) + " connected.");
                     Thread handlerThread = new Thread(new ClientHandler(clientSocket));
                     handlerThread.start();
+
+
                 } catch (IOException ioe)
                 {
                     ioe.printStackTrace();
                 }
+
             }
 
         } catch (IOException e) {

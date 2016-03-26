@@ -131,6 +131,7 @@ public class Main extends Application {
                     in = new BufferedReader(new FileReader(uploadFile));    //BufferedReader for original file
                     writer = new PrintWriter(copyFile);                     //Writer to temporary file
 
+                    writer.println("UPLOAD");
                     writer.println(uploadFile.getName());                   //Write file name to temporary file
 
                     while((line = in.readLine()) != null) {                 //Write file data to temporary file

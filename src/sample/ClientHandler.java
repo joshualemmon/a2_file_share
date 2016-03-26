@@ -20,6 +20,8 @@ public final class ClientHandler implements Runnable {
         this.clientSocket = socket;
         String title = null;    //Place holder for the title of the file
 
+        System.out.println("hi");
+
         try
         {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));  //Get the streamed file data
@@ -39,14 +41,18 @@ public final class ClientHandler implements Runnable {
     @Override
     public void run()
     {
-        try {
+        try
+        {
             clientSocket = new Socket(localHost,port);
 
             boolean endOfSession = false;
-            while (!endOfSession) {
-                endOfSession = processUpload();
+            while (!endOfSession)
+            {
+                endOfSession = processCommand("UPLOAD");
             }
-            try {
+
+            try
+            {
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,32 +62,32 @@ public final class ClientHandler implements Runnable {
         }
     }
 
-    protected boolean processUpload() {
+    protected void processUpload() {
         String line = null;
 
         try
         {
-            while ((line = in.readLine()) != null) {
+            while ((line = in.readLine()) != null)
+            {
                 writer.println(line);
             }
 
             in.close();
             writer.close();
-
-        } catch(IOException ioe) {
+        } catch(IOException ioe)
+        {
             ioe.printStackTrace();
         }
-        return true;
     }
 
-/*
-    protected boolean processCommand(String command, String filename) {
+    protected boolean processCommand(String command) {
         if (command.equalsIgnoreCase("DIR"))
         {
             return false;
         } else if (command.equalsIgnoreCase("UPLOAD"))
         {
-            return false;
+            processUpload();
+            return true;
         }
         else if (command.equalsIgnoreCase("DOWNLOAD"))
         {
@@ -92,7 +98,6 @@ public final class ClientHandler implements Runnable {
             return true;
         }
     }
-*/
 
     public static void main(String[] args) {
 
