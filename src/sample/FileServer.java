@@ -1,10 +1,7 @@
 package sample;
 
-import com.sun.jndi.ldap.Connection;
-
 import java.io.*;
 import java.net.*;
-import java.util.Vector;
 
 public class FileServer
 {
@@ -45,7 +42,7 @@ public class FileServer
 
     public static String[] getServerFiles()
     {
-        File servDir = new File("serverFolder");
+        File servDir = new File(".serverFolder");
         File[] serverFiles = servDir.listFiles();
 
         String[] s = new String[serverFiles.length];

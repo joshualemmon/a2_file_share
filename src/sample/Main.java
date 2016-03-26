@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 
 import java.io.*;
 
-import java.net.*;
 import java.net.Socket;
 import java.util.Optional;
 
@@ -32,12 +31,14 @@ public class Main extends Application {
 
     private static String computerName      = "";
     private static String folderPath         = "";
-    private static String destPath = "serverFolder";
+    private static String destPath = ".serverFolder";
 
     private static File downloadFile        = null;
     private static File uploadFile          = null;         //File to upload
     private static File copyFile            = null;         //File is filename + copy of uploadFile that will send through stream
 
+    public static ListView<String> leftList;
+    public static ListView<String> rightList;
     @Override
     public void start(Stage primaryStage) throws Exception{
         Group root = new Group();
@@ -70,8 +71,8 @@ public class Main extends Application {
             folderPath = argsPrompt.getEditor().getText();
         } while(folderPath.equals(""));
 
-        ListView<String> leftList = new ListView<>();
-        ListView<String> rightList = new ListView();
+        leftList = new ListView<>();
+        rightList = new ListView();
         updateFileLists(leftList, rightList);
 
         BorderPane bp = new BorderPane();
@@ -189,7 +190,14 @@ public class Main extends Application {
                 uploadedAlert.show();
             }
         });
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(event -> {
+            String fileName = rightList.getSelectionModel().getSelectedItem();
+            File deleteFile = new File(destPath + "/" + fileName);
+            deleteFile.delete();
+            updateFileLists(leftList, rightList);
 
+        });
         SplitPane sp = new SplitPane();
 
         final StackPane sp1 = new StackPane();
@@ -201,7 +209,7 @@ public class Main extends Application {
         sp.setMinHeight(465);
         sp.setDividerPosition(1, 0.5f);
 
-        h.getChildren().addAll(downloadButton, uploadButton);
+        h.getChildren().addAll(downloadButton, uploadButton, deleteButton);
         bp.setTop(h);
         bp.setCenter(sp);
         root.getChildren().addAll(bp);
@@ -222,10 +230,10 @@ public class Main extends Application {
 
     public static void updateFileLists(ListView<String> leftList, ListView<String> rightList )
     {
-            final ObservableList<String> files = FXCollections.observableArrayList(getFiles());
-            leftList.setItems(files);
-            final ObservableList<String> serverNames = FXCollections.observableArrayList(FileServer.getServerFiles());
-            rightList.setItems(serverNames);
+        final ObservableList<String> left = FXCollections.observableArrayList(getFiles());
+        final ObservableList<String> right = FXCollections.observableArrayList(FileServer.getServerFiles());
+        leftList.setItems(left);
+        rightList.setItems(right);
     }
 
     public static void main(String[] args) {
