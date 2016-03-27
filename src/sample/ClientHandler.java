@@ -45,7 +45,6 @@ public final class ClientHandler implements Runnable {
             } else if (message.equals("DELETE"))
             {
                 File deleteFile = new File(path + "/" + title);
-                System.out.println(deleteFile.getAbsolutePath());
                 deleteFile.delete();
                 skip = true;
             }
@@ -67,7 +66,6 @@ public final class ClientHandler implements Runnable {
         boolean endOfSession = false;
 
         while (!endOfSession && !skip) {
-            System.out.println("h");
             endOfSession = processUpload();
         }
 
@@ -92,12 +90,11 @@ public final class ClientHandler implements Runnable {
                 writer.println(line);
             }
 
-            in.close();
+            in.close();         //properly close streams
             writer.close();
         } catch(IOException ioe)
         {
-            ioe.printStackTrace();
-            //System.err.println("Problem with reading processUpload file.");
+            System.err.println("Problem with reading processUpload file.");
         }
         return true;
     }
