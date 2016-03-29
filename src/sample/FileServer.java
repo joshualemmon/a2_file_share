@@ -9,7 +9,6 @@ public class FileServer
     protected ServerSocket serverSocket     = null; //The Server current socket that will be actively listening to requests
                                                     //Needs to handle multiple client threads, therefore there must be multiple
                                                     //file server threads
-    protected int numClients                = 0;    //Total number of clients
     public static int SERVER_PORT           = 8080;
 
     public FileServer()
@@ -23,10 +22,9 @@ public class FileServer
                 try
                 {
                     clientSocket = serverSocket.accept();
-                    System.out.println("Client #" + (numClients + 1) + " connected.");
+                    System.out.println("Client connected.");
                     Thread handlerThread = new Thread(new ClientHandler(clientSocket));
                     handlerThread.start();
-
                 } catch (IOException ioe)
                 {
                     ioe.printStackTrace();
@@ -139,7 +137,6 @@ public class FileServer
             {
                 while ((line = in.readLine()) != null)
                 {
-                    System.out.println(line);
                     writer.println(line);
                 }
 
