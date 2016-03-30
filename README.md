@@ -8,3 +8,4 @@ CSCI 2020U second assignment
 2. Run server
 
 3. Run main and enter path info and computer name
+
